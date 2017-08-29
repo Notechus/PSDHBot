@@ -76,6 +76,12 @@ public class PSDHBot {
         player = AudioPlayer.getAudioPlayerForGuild(myGuild);
         player.clear();
         player.setVolume(config.getVolume());
+//        File f = new File("dream_on.mp3");
+//        try {
+//            player.queue(f);
+//        } catch (UnsupportedAudioFileException e) {
+//
+//        }
         player.queue(micro);
     }
 }

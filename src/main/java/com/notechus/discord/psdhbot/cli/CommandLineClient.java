@@ -43,12 +43,6 @@ public class CommandLineClient implements Runnable {
     @Override
     public void run() {
         log.info("Initialized input device");
-        AudioInputStream audioInputStream = captureVoice();
-        if (audioInputStream == null) {
-            log.error("No audio input stream available. The application will close.");
-            System.exit(0);
-        }
-        log.info("Created audio input stream");
         IDiscordClient client = createClient(config.getApiToken());
         log.info("Connected PSDHBot to the Discord");
         if (client != null) {
@@ -78,6 +72,7 @@ public class CommandLineClient implements Runnable {
     }
 
     private AudioInputStream captureVoice() {
+        log.info("Trying to create audio input stream");
         AudioFormat format = new AudioFormat(config.getSampleRate(), config.getSampleSizeBits(),
                 2, true, true);
         AudioInputStream stream = null;
