@@ -1,0 +1,8 @@
+username: PSDH # bot username
+guild: VoiceOverTest  # discord server name
+channel: General  # channel to connect
+apiToken: ${api.token}
+inputDevice: Built-in Microphone  # source input
+volume: 0.75f # default volume
+sampleRate: 48000.0f
+sampleSizeBits: 16
