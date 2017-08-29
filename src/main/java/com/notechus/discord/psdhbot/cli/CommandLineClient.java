@@ -84,7 +84,7 @@ public class CommandLineClient implements Runnable {
             targetLine.start();
             stream = new AudioInputStream(targetLine);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
         }
         return stream;
     }

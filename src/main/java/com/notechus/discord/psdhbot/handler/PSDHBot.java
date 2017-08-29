@@ -15,6 +15,8 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.util.audio.AudioPlayer;
 
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -76,12 +78,15 @@ public class PSDHBot {
         player = AudioPlayer.getAudioPlayerForGuild(myGuild);
         player.clear();
         player.setVolume(config.getVolume());
-//        File f = new File("dream_on.mp3");
-//        try {
-//            player.queue(f);
-//        } catch (UnsupportedAudioFileException e) {
-//
-//        }
         player.queue(micro);
+    }
+
+    private void playFile(String path) throws IOException {
+        File f = new File(path);
+        try {
+            player.queue(f);
+        } catch (UnsupportedAudioFileException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }

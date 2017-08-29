@@ -87,3 +87,5 @@ src/main/java/com/notechus/discord/event/
 src/main/java/com/notechus/discord/network/
 src/main/resources/modules/
 src/test/
+
+*.mp3
