@@ -9,6 +9,9 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
+import sx.blah.discord.handle.impl.events.shard.ReconnectFailureEvent;
+import sx.blah.discord.handle.impl.events.shard.ReconnectSuccessEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IVoiceChannel;
@@ -25,11 +28,13 @@ import java.util.Optional;
  */
 public class PSDHBot {
     private static final Logger log = LoggerFactory.getLogger(PSDHBot.class);
+    private static final int MAX_ATTEMPTS = 50;
     private final Config config;
     private IGuild myGuild;
     private AudioPlayer player;
     private IVoiceChannel voiceChannel;
     private AudioInputStream micro;
+    private IDiscordClient client;
 
     public PSDHBot(Config config, AudioInputStream micro) {
         this.micro = micro;
@@ -50,6 +55,28 @@ public class PSDHBot {
             passToCommander(message.getContent().substring(10), message.getAuthor().getName());
         } else if (message.getContent().startsWith("!com")) {
             passToCommander(message.getContent().substring(4), message.getAuthor().getName());
+        }
+    }
+
+    @EventSubscriber
+    public void onDisconnect(DisconnectedEvent event) throws IOException {
+        client.login();
+    }
+
+    @EventSubscriber
+    public void onReconnectSuccess(ReconnectSuccessEvent event) throws IOException {
+        initAndJoinChannel();
+        initPlayerAndPlay();
+    }
+
+    @EventSubscriber
+    public void onReconnectFailuer(ReconnectFailureEvent event) {
+        if (event.getCurrentAttempt() < MAX_ATTEMPTS) {
+            log.info("Trying to reconnect: {}", event.getCurrentAttempt());
+            client.login();
+        } else {
+            log.error("Could not reconnect");
+            System.exit(0);
         }
     }
 
