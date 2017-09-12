@@ -17,8 +17,6 @@ import sx.blah.discord.api.IDiscordClient;
 import javax.sound.sampled.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Arrays;
-import java.util.Optional;
 
 /**
  * @author notechus.
@@ -55,14 +53,10 @@ public class BotVerticle extends AbstractVerticle {
         AudioFormat format = new AudioFormat(config.getSampleRate(), config.getSampleSizeBits(),
                 2, true, true);
         AudioInputStream stream = null;
-
-        Optional<Mixer.Info> inputOptional = Arrays.stream(AudioSystem.getMixerInfo())
-                .filter(mixer -> mixer.getName().equals(config.getInputDevice()))
-                .findFirst();
-        Mixer.Info input = inputOptional.orElseThrow(InputUnavailableException::new);
+        DataLine.Info targetInfo = new DataLine.Info(TargetDataLine.class, format);
 
         try {
-            TargetDataLine targetLine = AudioSystem.getTargetDataLine(format, input);
+            TargetDataLine targetLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
             targetLine.open(format);
             targetLine.start();
             stream = new AudioInputStream(targetLine);
