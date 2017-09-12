@@ -20,7 +20,7 @@ public class GuildNotFoundException extends RuntimeException {
     }
 
     public GuildNotFoundException(Throwable cause) {
-        super(cause);
+        super(MESSAGE, cause);
     }
 
     public GuildNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {

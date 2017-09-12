@@ -4,6 +4,7 @@ import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.notechus.discord.psdhbot.handler.PSDHBot;
 import com.notechus.discord.psdhbot.type.Config;
+import com.notechus.discord.psdhbot.type.InputUnavailableException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import sx.blah.discord.api.IDiscordClient;
 import javax.sound.sampled.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * @author notechus.
@@ -30,7 +33,14 @@ public class BotVerticle extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
         this.config = parseConfig();
         log.info("Parsed config file");
-        Observable.just(new PSDHBot(config, captureVoice(config)))
+
+        AudioInputStream audioInputStream = captureVoice(config);
+
+        if (audioInputStream == null) {
+            throw new InputUnavailableException();
+        }
+
+        Observable.just(new PSDHBot(config, audioInputStream))
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::createClient, error -> {
                     log.error("Could not connect to the Discord", error);
@@ -45,10 +55,14 @@ public class BotVerticle extends AbstractVerticle {
         AudioFormat format = new AudioFormat(config.getSampleRate(), config.getSampleSizeBits(),
                 2, true, true);
         AudioInputStream stream = null;
-        DataLine.Info targetInfo = new DataLine.Info(TargetDataLine.class, format);
+
+        Optional<Mixer.Info> inputOptional = Arrays.stream(AudioSystem.getMixerInfo())
+                .filter(mixer -> mixer.getName().equals(config.getInputDevice()))
+                .findFirst();
+        Mixer.Info input = inputOptional.orElseThrow(InputUnavailableException::new);
 
         try {
-            TargetDataLine targetLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
+            TargetDataLine targetLine = AudioSystem.getTargetDataLine(format, input);
             targetLine.open(format);
             targetLine.start();
             stream = new AudioInputStream(targetLine);

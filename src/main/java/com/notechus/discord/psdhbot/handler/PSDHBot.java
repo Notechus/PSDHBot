@@ -67,6 +67,7 @@ public class PSDHBot {
     public void onReconnectSuccess(ReconnectSuccessEvent event) throws IOException {
         initAndJoinChannel();
         initPlayerAndPlay();
+        log.info("Reconnected with success");
     }
 
     @EventSubscriber

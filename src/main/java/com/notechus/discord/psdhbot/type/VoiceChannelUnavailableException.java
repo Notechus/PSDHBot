@@ -19,7 +19,7 @@ public class VoiceChannelUnavailableException extends RuntimeException {
     }
 
     public VoiceChannelUnavailableException(Throwable cause) {
-        super(cause);
+        super(MESSAGE, cause);
     }
 
     public VoiceChannelUnavailableException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
