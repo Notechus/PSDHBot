@@ -60,13 +60,15 @@ public class PSDHBot {
 
     @EventSubscriber
     public void onDisconnect(DisconnectedEvent event) throws IOException {
-        client.login();
+        if (client != null && !client.isLoggedIn()) {
+            client.login();
+        }
     }
 
     @EventSubscriber
     public void onReconnectSuccess(ReconnectSuccessEvent event) throws IOException {
-        initAndJoinChannel();
-        initPlayerAndPlay();
+//        initAndJoinChannel();
+//        initPlayerAndPlay();
         log.info("Reconnected with success");
     }
 
@@ -116,5 +118,17 @@ public class PSDHBot {
         } catch (UnsupportedAudioFileException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public IDiscordClient getClient() {
+        return client;
+    }
+
+    public void setClient(IDiscordClient client) {
+        this.client = client;
     }
 }

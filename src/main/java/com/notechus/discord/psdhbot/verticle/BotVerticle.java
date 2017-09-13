@@ -79,6 +79,7 @@ public class BotVerticle extends AbstractVerticle {
         log.info("Connected PSDHBot to the Discord");
         if (iDiscordClient != null) {
             iDiscordClient.getDispatcher().registerListener(bot);
+            bot.setClient(iDiscordClient);
         }
     }
 }
