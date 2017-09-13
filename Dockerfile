@@ -6,7 +6,6 @@ ENV JAVA_VER 8
 
 WORKDIR /app
 
-ADD /target/lib /app/lib
-ADD /target/psdh-bot-1.0.jar /app/psdh-bot.jar
+ADD /target/psdhbot-jar-with-dependencies.jar /app/psdh-bot.jar
 ADD /config.yml /app/config.yml
 ENTRYPOINT ["java","-jar","psdh-bot.jar"]

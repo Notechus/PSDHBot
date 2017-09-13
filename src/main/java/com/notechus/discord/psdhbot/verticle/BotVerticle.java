@@ -4,9 +4,7 @@ import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.notechus.discord.psdhbot.handler.PSDHBot;
 import com.notechus.discord.psdhbot.type.Config;
-import com.notechus.discord.psdhbot.type.InputUnavailableException;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -28,14 +26,15 @@ public class BotVerticle extends AbstractVerticle {
     private Config config;
 
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
+    public void start() throws Exception {
         this.config = parseConfig();
         log.info("Parsed config file");
 
         AudioInputStream audioInputStream = captureVoice(config);
 
         if (audioInputStream == null) {
-            throw new InputUnavailableException();
+            log.error("Could not find specified input");
+            System.exit(-1);
         }
 
         Observable.just(new PSDHBot(config, audioInputStream))
@@ -44,8 +43,6 @@ public class BotVerticle extends AbstractVerticle {
                     log.error("Could not connect to the Discord", error);
                     System.exit(0);
                 });
-
-        startFuture.succeeded();
     }
 
     private AudioInputStream captureVoice(Config config) {

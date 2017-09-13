@@ -32,7 +32,6 @@ public class PSDHBot {
     private final Config config;
     private IGuild myGuild;
     private AudioPlayer player;
-    private IVoiceChannel voiceChannel;
     private AudioInputStream micro;
     private IDiscordClient client;
 
@@ -48,7 +47,7 @@ public class PSDHBot {
         initPlayerAndPlay();
     }
 
-    @EventSubscriber
+//    @EventSubscriber
     public void onMessage(MessageReceivedEvent event) {
         IMessage message = event.getMessage();
         if (message.getContent().startsWith("!commander")) {
@@ -73,9 +72,9 @@ public class PSDHBot {
     }
 
     @EventSubscriber
-    public void onReconnectFailuer(ReconnectFailureEvent event) {
+    public void onReconnectFailure(ReconnectFailureEvent event) {
         if (event.getCurrentAttempt() < MAX_ATTEMPTS) {
-            log.info("Trying to reconnect: {}", event.getCurrentAttempt());
+            log.info("Trying to reconnect, attempt {}", event.getCurrentAttempt());
             client.login();
         } else {
             log.error("Could not reconnect");
@@ -88,7 +87,7 @@ public class PSDHBot {
                 .filter(channel -> channel.getName().equals(config.getChannel()))
                 .findFirst();
 
-        voiceChannel = channelOptional.orElseThrow(VoiceChannelUnavailableException::new);
+        IVoiceChannel voiceChannel = channelOptional.orElseThrow(VoiceChannelUnavailableException::new);
         voiceChannel.join();
         log.info("Connected to {} channel", voiceChannel.getName());
     }
